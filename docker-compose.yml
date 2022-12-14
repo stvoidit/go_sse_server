@@ -1,0 +1,12 @@
+version: "3.5"
+
+services:
+    go_sse_server:
+        container_name: GO_SSE_SERVER
+        image: go_sse_server:v1
+        restart: always
+        build:
+            context: .
+            target: backend-build
+        ports:
+            - 8080:8080
