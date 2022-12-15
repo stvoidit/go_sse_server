@@ -1,14 +1,24 @@
 <script lang="ts">
 import { ref, computed, onBeforeUnmount } from 'vue'
+interface ServiceEvent {
+  id: string;
+  data: {
+    payload: string;
+    time: string;
+  }
+}
 export default {
+  props: {
+    inited: { type: Boolean, required: true }
+  },
   setup() {
     const sseStatus = ref(false)
-    const events = ref<Array<any>>([])
+    const events = ref<Array<ServiceEvent>>([])
     const sse = new EventSource("/api/events", { withCredentials: true })
     sse.addEventListener("message", function(ev){
       events.value.unshift({
         id: ev.lastEventId,
-        ...JSON.parse(ev.data)
+        data: JSON.parse(ev.data)
       })
     })
     sse.addEventListener("open", function(ev) {sseStatus.value = true})
@@ -31,19 +41,22 @@ export default {
 </script>
 
 <template>
-  <div>
-    <div>sse status: {{sseStatus}}</div>
-  </div>
-  <h2>events</h2>
-  <div class="container">
-    <div>current event: {{currentEvent}}</div>
-    <div>events count: {{eventCount}}</div>
-    <div>
-      <div v-for="e in events" :key="e.id">{{e}}</div>
+<div class="row">
+  <div class="card mt-3">
+    <div class="card-body">
+      <div>sse status: {{sseStatus}}</div>
+      <div>auth: {{inited}}</div>
     </div>
   </div>
+  <div class="card mt-3">
+    <div class="card-body">
+      <h2>events</h2>
+      <div>current event: {{currentEvent}}</div>
+      <div>events count: {{eventCount}}</div>
+      <ul class="mt-2">
+        <li v-for="e in events" :key="e.id">{{e}}</li>
+      </ul>
+    </div>
+  </div>
+</div>
 </template>
-
-<style scoped>
-
-</style>

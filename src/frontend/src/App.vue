@@ -1,23 +1,28 @@
 <template>
-  <div>auth: {{inited}}</div>
-  <HelloWorld v-if="inited"/>
+  <div class="container">
+    <ComponentSSE v-if="inited" :inited="inited"/>
+  </div>
 </template>
 
-<script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import ComponentSSE from '@/components/ComponentSSE.vue'
 import { ref} from "vue"
-const data = ref(123)
-const inited = ref(false)
-fetch("/api/init").then(response => {
-  if (response.status === 200) {
-    inited.value = true
-  } else {
-    alert("not auth")
+export default {
+  components: {
+    ComponentSSE
+  },
+  setup() {
+    const inited = ref(false)
+    fetch("/api/init").then(response => {
+      if (response.status === 200) {
+        inited.value = true
+      } else {
+        alert("not auth")
+      }
+    })
+    return {
+      inited
+    }
   }
-})
+}
 </script>
-
-
-<style scoped>
-
-</style>
