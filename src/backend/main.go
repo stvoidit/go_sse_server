@@ -130,7 +130,7 @@ func initUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func events() http.HandlerFunc {
-	var chahEvents = make(chan EventSSE)
+	var chanEvents = make(chan EventSSE)
 	go func() {
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
@@ -139,7 +139,7 @@ func events() http.HandlerFunc {
 				"time":    t.Format(time.RFC3339),
 				"payload": genPayload(),
 			})
-			chahEvents <- EventSSE{
+			chanEvents <- EventSSE{
 				ID:        strconv.FormatInt(t.UnixNano(), 10),
 				EventType: "message",
 				Data:      string(b),
@@ -148,7 +148,7 @@ func events() http.HandlerFunc {
 	}()
 	var clientsPool = NewPoolSSE()
 	go func() {
-		for msg := range chahEvents {
+		for msg := range chanEvents {
 			clientsPool.WriteMessage(msg)
 		}
 	}()

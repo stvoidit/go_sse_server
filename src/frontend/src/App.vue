@@ -1,7 +1,6 @@
 <template>
   <div>auth: {{inited}}</div>
   <HelloWorld v-if="inited"/>
-
 </template>
 
 <script setup lang="ts">
@@ -16,7 +15,6 @@ fetch("/api/init").then(response => {
     alert("not auth")
   }
 })
-
 </script>
 
 

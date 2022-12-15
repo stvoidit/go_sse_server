@@ -2,6 +2,7 @@
 import { ref, computed, onBeforeUnmount } from 'vue'
 export default {
   setup() {
+    const sseStatus = ref(false)
     const events = ref<Array<any>>([])
     const sse = new EventSource("/api/events", { withCredentials: true })
     sse.addEventListener("message", function(ev){
@@ -10,8 +11,8 @@ export default {
         ...JSON.parse(ev.data)
       })
     })
-    sse.addEventListener("open", function(ev) {console.log(ev)})
-    sse.onerror =(ev) => console.error(ev)
+    sse.addEventListener("open", function(ev) {sseStatus.value = true})
+    sse.onerror = (ev) => sseStatus.value = false
     const eventCount = computed(() => events.value.length)
     const currentEvent = computed(() => {
       if (eventCount.value > 0) {
@@ -19,17 +20,20 @@ export default {
       }
       return null
     })
-
     return {
       events,
       eventCount,
-      currentEvent
+      currentEvent,
+      sseStatus
     }
   }
 }
 </script>
 
 <template>
+  <div>
+    <div>sse status: {{sseStatus}}</div>
+  </div>
   <h2>events</h2>
   <div class="container">
     <div>current event: {{currentEvent}}</div>
