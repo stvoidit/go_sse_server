@@ -1,0 +1,67 @@
+{
+    "root": true,
+    "env": {
+        "node": true,
+        "browser": true
+    },
+    "plugins": [
+        "@typescript-eslint"
+    ],
+    "globals": {
+        "NodeJS": true
+    },
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+        "parser": "@typescript-eslint/parser",
+        "extraFileExtensions": [
+            ".vue"
+        ]
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/recommended",
+        "@vue/typescript",
+        "plugin:vue/vue3-recommended",
+        "@vue/eslint-config-typescript"
+    ],
+    "rules": {
+        "no-useless-escape": 0,
+        "comma-dangle": [
+            "warn",
+            "never"
+        ],
+        "array-bracket-newline": [
+            "warn",
+            {
+                "multiline": true,
+                "minItems": 2
+            }
+        ],
+        "array-element-newline": [
+            "warn",
+            "always"
+        ],
+        "quotes": [
+            "warn",
+            "double",
+            {
+                "avoidEscape": true
+            }
+        ],
+        "indent": [
+            "warn",
+            2,
+            {
+                "SwitchCase": 0
+            }
+        ],
+        "semi": [
+            "warn",
+            "always"
+        ],
+        "semi-style": [
+            "error",
+            "last"
+        ]
+    }
+}

@@ -1,28 +1,31 @@
 <template>
   <div class="container">
-    <ComponentSSE v-if="inited" :inited="inited"/>
+    <ComponentSSE
+      v-if="inited"
+      :inited="inited"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import ComponentSSE from '@/components/ComponentSSE.vue'
-import { ref} from "vue"
+import ComponentSSE from "@/components/ComponentSSE.vue";
+import { ref } from "vue";
 export default {
   components: {
     ComponentSSE
   },
   setup() {
-    const inited = ref(false)
+    const inited = ref(false);
     fetch("/api/init").then(response => {
       if (response.status === 200) {
-        inited.value = true
+        inited.value = true;
       } else {
-        alert("not auth")
+        alert("not auth");
       }
-    })
+    });
     return {
       inited
-    }
+    };
   }
-}
+};
 </script>
