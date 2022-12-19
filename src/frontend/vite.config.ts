@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
-import path from "path";
+import { resolve } from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -9,7 +9,8 @@ export default defineConfig({
     https: false,
     proxy: {
       "/api": {
-        target: "http://0.0.0.0:8080"
+        target: "http://0.0.0.0:8080",
+        changeOrigin: true
       }
     },
     host: "0.0.0.0",
@@ -28,11 +29,11 @@ export default defineConfig({
     alias: [
       {
         find: "@",
-        replacement: path.resolve(__dirname, "src")
+        replacement: resolve(__dirname, "src")
       },
       {
         find: "~bootstrap",
-        replacement: path.resolve(__dirname, "node_modules/bootstrap")
+        replacement: resolve(__dirname, "node_modules/bootstrap")
       }
     ]
   }

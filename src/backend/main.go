@@ -1,12 +1,11 @@
 package main
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"encoding/json"
 	"io"
 	"io/fs"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -68,9 +67,10 @@ func (p *PoolSSE) Del(c ClientSSE) {
 func (p *PoolSSE) WriteMessage(m EventSSE) {
 	p.lock.Lock()
 	defer p.lock.Unlock()
+	message := m.prepare()
 	for client := range p.pool {
 		go func(c ClientSSE) {
-			if _, err := m.WriteTo(c); err != nil {
+			if _, err := c.Write(message); err != nil {
 				delete(p.pool, c)
 				return
 			}
@@ -87,32 +87,26 @@ func NewPoolSSE() *PoolSSE {
 	return &PoolSSE{pool: make(map[ClientSSE]struct{})}
 }
 
-// WriteTo - io.WriterTo
-func (e EventSSE) WriteTo(w io.Writer) (n int64, err error) {
+func (e *EventSSE) prepare() []byte {
+	var buf = make([]byte, 0)
 	for _, msgPart := range [][]byte{
 		_id, []byte(e.ID), _delim,
 		_event, []byte(e.EventType), _delim,
 		_data, []byte(e.Data), _end,
 	} {
-		_n, err := w.Write(msgPart)
-		if err != nil {
-			return n, err
-		}
-		n += int64(_n)
+		buf = append(buf, msgPart...)
 	}
-	return
+	return buf
 }
 
 func (e EventSSE) String() string {
 	var sb strings.Builder
-	e.WriteTo(&sb)
+	sb.Write(e.prepare())
 	return sb.String()
 }
 
-func genPayload() string {
-	var buf = make([]byte, 16)
-	rand.Read(buf)
-	return hex.EncodeToString(buf)
+func genPayload() float64 {
+	return rand.Float64()
 }
 
 func initUser(w http.ResponseWriter, r *http.Request) {
@@ -134,16 +128,18 @@ func events() http.HandlerFunc {
 	go func() {
 		ticker := time.NewTicker(time.Second)
 		defer ticker.Stop()
+		var id = uint64(1)
 		for t := range ticker.C {
-			b, _ := json.Marshal(map[string]string{
+			b, _ := json.Marshal(map[string]any{
 				"time":    t.Format(time.RFC3339),
 				"payload": genPayload(),
 			})
 			chanEvents <- EventSSE{
-				ID:        strconv.FormatInt(t.UnixNano(), 10),
+				ID:        strconv.FormatUint(id, 10),
 				EventType: "message",
 				Data:      string(b),
 			}
+			id++
 		}
 	}()
 	var clientsPool = NewPoolSSE()
@@ -175,9 +171,7 @@ func events() http.HandlerFunc {
 // FileSystemSPA - обертка над fs.FileSystem для SPA приложения
 func FileSystemSPA(dirname string) fs.FS { return &spaFS{os.DirFS(dirname)} }
 
-type spaFS struct {
-	hfs fs.FS
-}
+type spaFS struct{ hfs fs.FS }
 
 func (sfs spaFS) Open(name string) (fs.File, error) {
 	if _, err := fs.Stat(sfs.hfs, name); err != nil && os.IsNotExist(err) {
@@ -186,12 +180,19 @@ func (sfs spaFS) Open(name string) (fs.File, error) {
 	return sfs.hfs.Open(name)
 }
 
+func middlewareLog(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println(r.RemoteAddr, r.Method, r.URL.String())
+		h.ServeHTTP(w, r)
+	})
+}
+
 func main() {
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	log.SetFlags(log.Ldate | log.Ltime)
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.FS(FileSystemSPA("static"))))
 	mux.HandleFunc("/api/init", initUser)
 	mux.Handle("/api/events", events())
 	log.Println("server start om: http://0.0.0.0:8080")
-	http.ListenAndServe("0.0.0.0:8080", mux)
+	http.ListenAndServe("0.0.0.0:8080", middlewareLog(mux))
 }
