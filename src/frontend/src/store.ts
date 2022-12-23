@@ -1,5 +1,6 @@
+import { computed, ref } from "vue";
+
 import { defineStore } from "pinia";
-import { ref, computed } from "vue";
 
 type ServiceEvent = {
   id: string;

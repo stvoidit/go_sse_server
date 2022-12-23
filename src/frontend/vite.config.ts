@@ -1,11 +1,10 @@
-import { defineConfig, loadEnv, ConfigEnv, UserConfigExport } from "vite";
-import { fileURLToPath, URL } from "node:url";
-import vue from "@vitejs/plugin-vue";
+import { ConfigEnv, UserConfigExport, defineConfig, loadEnv } from "vite";
+import { URL, fileURLToPath } from "node:url";
 
+import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
 export default ({ mode }: ConfigEnv): UserConfigExport => {
-  console.log(import.meta);
   const env = loadEnv(mode, ".");
   return defineConfig({
     plugins: [vue()],

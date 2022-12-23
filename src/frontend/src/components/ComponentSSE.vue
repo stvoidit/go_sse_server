@@ -1,17 +1,17 @@
 <script lang="ts">
-import { ref, onMounted, watch, shallowRef } from "vue";
-import { useEventsStore } from "@/store";
 import Chart from "chart.js/auto";
-import { ChartOptions } from "chart.js";
 import moment from "moment";
-export default {
+import { ChartOptions } from "chart.js";
+import { ref, onMounted, watch, shallowRef, defineComponent } from "vue";
+import { useEventsStore } from "@/store";
+export default defineComponent({
   props: {
     inited: { type: Boolean, required: true }
   },
   setup() {
     const eventStore = useEventsStore();
     const chart = shallowRef<Chart>();
-    const refChart = ref();
+    const refChart = ref<HTMLCanvasElement>();
     const showLog = ref(false);
 
     watch(eventStore.events, () => {
@@ -22,7 +22,8 @@ export default {
       chart.value.update();
     });
 
-    function renderChart() {
+    async function renderChart() {
+      if (!refChart.value) return;
       const chartOptions: ChartOptions = {
         responsive: true,
         interaction: {
@@ -39,6 +40,7 @@ export default {
           }
         }
       };
+
       chart.value = new Chart(
         refChart.value,
         {
@@ -63,7 +65,7 @@ export default {
       showLog
     };
   }
-};
+});
 </script>
 
 <template>

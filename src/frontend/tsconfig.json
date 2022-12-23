@@ -26,7 +26,8 @@
     "skipLibCheck": true,
     "noEmit": true,
     "composite": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true
   },
   "include": [
     "src/**/*.ts",

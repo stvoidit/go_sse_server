@@ -8,9 +8,9 @@
 </template>
 
 <script lang="ts">
+import { ref, defineComponent } from "vue";
 import ComponentSSE from "@/components/ComponentSSE.vue";
-import { ref } from "vue";
-export default {
+export default defineComponent({
   components: {
     ComponentSSE
   },
@@ -27,5 +27,5 @@ export default {
       inited
     };
   }
-};
+});
 </script>
