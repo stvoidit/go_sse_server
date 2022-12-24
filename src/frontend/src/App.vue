@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <ComponentSSE
+    <ViewSSE
       v-if="inited"
       :inited="inited"
     />
@@ -9,10 +9,10 @@
 
 <script lang="ts">
 import { ref, defineComponent } from "vue";
-import ComponentSSE from "@/components/ComponentSSE.vue";
+import ViewSSE from "@/views/ViewSSE.vue";
 export default defineComponent({
   components: {
-    ComponentSSE
+    ViewSSE
   },
   setup() {
     const inited = ref(false);
