@@ -10,22 +10,16 @@
 import Chart from "chart.js/auto";
 import moment from "moment";
 import { ChartOptions } from "chart.js";
-import { defineComponent, onMounted, watch, shallowRef, PropType, ref } from "vue";
-interface ServiceEvent {
-  id: string;
-  data: {
-    payload: number;
-    time: string;
-  }
-}
+import { defineComponent, onMounted, shallowRef, PropType, watchEffect } from "vue";
+import { ServiceEvent } from "@/store";
 export default defineComponent({
   props: {
     events: { type: Array as PropType<Array<ServiceEvent>>, required: true }
   },
   setup(props) {
     const chart = shallowRef<Chart>();
-    const refChart = ref<HTMLCanvasElement>();
-    watch(props.events, () => {
+    const refChart = shallowRef<HTMLCanvasElement>();
+    watchEffect(() => {
       if (!chart.value || props.events.length === 0) return;
       const lastElem = props.events[props.events.length-1];
       chart.value.data.labels?.push(moment(lastElem.data.time).format("YYYY-MM-DD HH:mm:ss"));

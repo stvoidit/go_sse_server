@@ -1,8 +1,7 @@
-import { computed, ref } from "vue";
-
 import { defineStore } from "pinia";
+import { ref } from "vue";
 
-type ServiceEvent = {
+export type ServiceEvent = {
   id: string;
   data: {
     payload: number;
@@ -25,17 +24,8 @@ export const useEventsStore = defineStore("events", () => {
     sseStatus.value = false;
     console.error(ev);
   };
-  const eventCount = computed(() => events.value.length);
-  const currentEvent = computed(() => {
-    if (eventCount.value > 0) {
-      return events.value[events.value.length-1];
-    }
-    return null;
-  });
   return {
     sseStatus,
-    events,
-    eventCount,
-    currentEvent
+    events
   };
 });

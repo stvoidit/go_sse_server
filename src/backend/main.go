@@ -1,3 +1,4 @@
+// Package main - like a SSE backend
 package main
 
 import (
@@ -117,7 +118,7 @@ func initUser(w http.ResponseWriter, r *http.Request) {
 		Value:    "13131",
 		MaxAge:   3600,
 		HttpOnly: true,
-		SameSite: http.SameSiteNoneMode,
+		SameSite: http.SameSiteLaxMode,
 	})
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("ok"))
