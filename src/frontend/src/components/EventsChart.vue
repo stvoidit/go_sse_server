@@ -9,11 +9,12 @@
 <script lang="ts">
 import Chart from "chart.js/auto";
 import moment from "moment";
-import { ChartOptions } from "chart.js";
+import { ChartOptions, ChartTypeRegistry } from "chart.js";
 import { defineComponent, onMounted, shallowRef, PropType, watchEffect } from "vue";
 import { ServiceEvent } from "@/store";
 export default defineComponent({
   props: {
+    typeChart: { type: String as PropType<keyof ChartTypeRegistry>, default: "bar" },
     events: { type: Array as PropType<Array<ServiceEvent>>, required: true }
   },
   setup(props) {
@@ -47,13 +48,15 @@ export default defineComponent({
       chart.value = new Chart(
         refChart.value,
         {
-          type: "bar",
+          type: props.typeChart,
           data: {
             labels: [],
             datasets: [
               {
                 backgroundColor: "#850391",
-                data: []
+                borderColor: "#850391",
+                data: [],
+                tension: 0.25
               }
             ]
           },

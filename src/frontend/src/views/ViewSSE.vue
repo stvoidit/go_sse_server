@@ -29,7 +29,10 @@ export default defineComponent({
         :inited="inited"
         :sse-status="eventStore.sseStatus"
       />
-      <EventsChart :events="eventStore.events" />
+      <EventsChart
+        :events="eventStore.events"
+        :type-chart="'bar'"
+      />
     </div>
     <div class="col-3">
       <EventsLog :events="eventStore.events" />
